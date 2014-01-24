@@ -1,17 +1,11 @@
 close all;
 
-im = imread( 'map.jpg');
-map = im2bw(im);
+[mapImage, mapDimensions, currentPose, wayPoints] = InitializeMap();
 
-initialX = 100;
-initialY = 100;
-initialTheta = 0;
-initialRange = 10;
 
-wayPoints = [10 10; 20 40; 99 15];
+InitializeSamples( currentPose, mapDimensions );
 
 currentPathStep = 1;
-
 currentWayPoint = wayPoints( 1,:);
 
 samplesEnumX = 1;
@@ -23,47 +17,69 @@ samplesEnumWeight = 4;
 mapSizeX = 200;
 mapSizeY = 200;
 
-nSamples = 20;
+numSamples = 20;
 
-samples = zeros( nSamples,4 );
+samples = InitializeSamples( currentPose, numSamples ) ;
 
-figure;
-hold on;
-axis([0 mapSizeX 0 mapSizeY])
-for i = 1:nSamples
-    samples(i,samplesEnumX ) = initialX + floor( (rand() - 0.5) * initialRange);
-    samples(i,samplesEnumY ) = initialY + floor( (rand() - 0.5) * initialRange);
-    samples(i,samplesEnumTheta ) = floor( rand() * 2 * pi );
-    samples(i,samplesEnumWeight ) = 0;
- 
-    plot(samples(i,samplesEnumX),samples(i,samplesEnumY),'r*');   
-end
-plot(initialX, initialY,'b.');    
-plot(currentWayPoint(1),currentWayPoint(2),'go');    
 
-for i = 1:nSamples
-  %  probabilites = applyMotionModel( samples(i,samplesEnumX),samples(i,samplesEnumY), samples(i,samplesEnumTheta), z,  map)
+sonarResults = getMockSonarResults( mapImage, currentPose, -pi/4, pi/2, 180 );
+
+dumpState;
+
+
+%faceCurrentWayPoint();
+%moveForward( 10 );
+
+
+
+
+
+%for i = 1:nSamples
+%   probabilites = applyMotionModel( samples(i,1),samples(i,2), samples(i,3), z,  map)
     %    measurement_model(samples(i,samplesEnumX),samples(i,samplesEnumY), samples(i,samplesEnumTheta), z,  map)
-end
+%end
 
 
- localizationInterval = 100;
- nextLocalization = localizationInterval;
- 
- %while( ~done )
-     deltaX = 1.5;
-     deltaY = 1.5;
-     deltaTheta = pi/16;
-     
-     [sonarResults,  sonarThetas] = getStubSonarResults( map, initialX, initialY, initialTheta );
-     for i = 1: 180
-        x = cos( sonarThetas( i )) * sonarResults( i ) + initialX;
-        y = sin( sonarThetas( i )) * sonarResults( i ) + initialY;
-        
-        x, y, sonarResults( i )
-        plot( x, y ); 
+%localizationInterval = 100;
+%nextLocalization = localizationInterval;
 
-     end
+
+      deltaX = -50;
+      deltaY = -50;
+      deltaTheta = 0;
+    
+      [samples(:,1), samples(:,2), samples(:,3)] = motionModel( samples(:,1), samples(:,2), samples(:,3), deltaX, deltaY, deltaTheta, numSamples ); 
+      currentPose(1) = samples(1,1);
+      currentPose(2) = samples(1,2);
+      currentPose(3) = samples(1,3);
+      currentPose(1) = 100;
+      currentPose(2) = 100;
+      currentPose(3) = 0;
+
+      sonarResults = getMockSonarResults( mapImage, currentPose, -pi/4, pi/2, 180 );
+
+      dumpState();
+
+      
+      
+%while( ~done )
+%      deltaX = 1.5;
+%      deltaY = 1.5;
+%      deltaTheta = pi/16;
+    
+%      [samples(:,1), samples(:,2), samples(:,3)] = motionModel( samples(:,1), samples(:,2), samples(:,3), deltaX, deltaY, deltaTheta ); 
+%      dumpState();
+      
+%      
+%      [sonarResults,  sonarThetas] = getStubSonarResults( map, initialX, initialY, initialTheta );
+%      for i = 1: 180
+%         x = cos( sonarThetas( i )) * sonarResults( i ) + initialX;
+%         y = sin( sonarThetas( i )) * sonarResults( i ) + initialY;
+%         
+%         x, y, sonarResults( i )
+%         plot( x, y ); 
+% 
+%      end
 %     
 %     generateOdometryModelSamples();
 %     
@@ -73,8 +89,8 @@ end
 %     nextLocalization = nextLocalization - 1;
 %     if( nextLocalization  <= 0 )
 %         nextLocalization = localizationInterval;
-%         
-%         % stop moving
+         
+         % stop moving
 %         doFullStop();
 %         setLocation = doLocalization();
 %         setCourseTo( currentTarget );

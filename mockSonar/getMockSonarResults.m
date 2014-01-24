@@ -1,17 +1,21 @@
-function [ ultraSoundReadings, ultraSoundThetas  ] = getMockSonarResults( map, x, y, scanStartTheta, scanEndTheta )
-    stepSize = 2*pi / 360;
-    perturbance = 25; 
-    scanTheta = scanStartTheta;
+function [ ultraSoundReadings ] = getMockSonarResults( map, pose, scanStartTheta, scanRange, scanSteps )
+    maxRange = 225;
+    stepSize = scanRange / scanSteps;
+    perturbance = 10; 
     ultraSoundReadings = [];
-    ultraSoundThetas = [];
-    while scanTheta < scanEndTheta
-        if(5==2)
-        ultraSoundReadings(end+1) = castraysingle( x, y, scanTheta, map, 1000 ) + ( perturbance * (rand() -0.5));
+    for step = 1:scanSteps
+        sonarTheta = (step * stepSize) + scanStartTheta
+        inertialTheta = pose(3) + sonarTheta
+        castRayResult = castraysingle( pose(1), pose(2), inertialTheta, map, maxRange );
+        if castRayResult < 1
+            castRayResult = maxRange;
         else
-            ultraSoundReadings(end+1) = castraysingle( x, y, scanTheta, map, 1000 );
+            castRayResult = castRayResult + ( perturbance * (rand() -0.5));
+            if castRayResult > maxRange
+                castRayResult = maxRange;
+            end
         end
-        ultraSoundThetas(end+1) = scanTheta; 
-        scanTheta = scanTheta + stepSize
-        end
+        ultraSoundReadings(end+1,:) = [ castRayResult, sonarTheta ]; 
+     end
 end
 
