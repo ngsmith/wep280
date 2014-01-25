@@ -1,4 +1,4 @@
-function [ outX, outY, outTheta ] = motionModel( x, y, theta, deltaX, deltaY, deltaTheta, numSamples )
+function [ outX, outY, outTheta ] = motionModel( x, y, theta, deltaX, deltaY, deltaTheta )
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
     % Rotational alphas
@@ -14,11 +14,11 @@ function [ outX, outY, outTheta ] = motionModel( x, y, theta, deltaX, deltaY, de
     theta_prime = inRange(theta_prime); %force theta to belong to [-pi,pi]    
     x_prime = x(1) - deltaX*cos(theta_prime);
     y_prime = y(1) - deltaY*sin(theta_prime);
-    
-    for i = 2:numSamples
-        dr1 = atan2(y_prime - y(1), x_prime - x(1)) - theta(1);
-        dtr = sqrt((y(1) - y_prime)^2 + (x(1)- x_prime)^2);
-        dr2 = theta_prime - theta(1) - dr1;
+
+    dr1 = atan2(y_prime - y(1), x_prime - x(1)) - theta(1);
+    dtr = sqrt((y(1) - y_prime)^2 + (x(1)- x_prime)^2);
+    dr2 = theta_prime - theta(1) - dr1;
+    for i = 2:size(x,1)
  
         dr1_h = dr1 - mysample(abs(a1*dr1 + a2*dtr));
         dtr_h = dtr - mysample(abs(a3*dtr + a4*(dr1+dr2)));

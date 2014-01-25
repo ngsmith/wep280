@@ -1,9 +1,19 @@
+
+clear variables;
+clear global;
 close all;
 
-[mapImage, mapDimensions, currentPose, wayPoints] = InitializeMap();
+
+doMocks = true;
 
 
-InitializeSamples( currentPose, mapDimensions );
+[mapImage, mapDimensions, wayPoints] = InitializeMap();
+currentPose = [200 200 0];
+
+r = 2.7;
+l = 6;
+rotatePower = 20;
+forwardPower = 30;
 
 currentPathStep = 1;
 currentWayPoint = wayPoints( 1,:);
@@ -14,85 +24,75 @@ samplesEnumY = 2;
 samplesEnumTheta = 3;
 samplesEnumWeight = 4;
 
-mapSizeX = 200;
-mapSizeY = 200;
-
-numSamples = 20;
+numSamples = 4;
 
 samples = InitializeSamples( currentPose, numSamples ) ;
 
+sonarResults = getMockSonarResults( mapImage, currentPose, -pi/2, pi, 10 );
 
-sonarResults = getMockSonarResults( mapImage, currentPose, -pi/4, pi/2, 180 );
+    
 
 dumpState;
 
+localizationInterval = 20;
+nextLocalization = localizationInterval;
 
-%faceCurrentWayPoint();
-%moveForward( 10 );
-
-
-
-
-
-%for i = 1:nSamples
-%   probabilites = applyMotionModel( samples(i,1),samples(i,2), samples(i,3), z,  map)
-    %    measurement_model(samples(i,samplesEnumX),samples(i,samplesEnumY), samples(i,samplesEnumTheta), z,  map)
-%end
-
-
-%localizationInterval = 100;
-%nextLocalization = localizationInterval;
-
-
-      deltaX = -50;
-      deltaY = -50;
-      deltaTheta = 0;
+arrivedAtFinalDestination = false;
+done = false;
+iteration = 0;
+maxIterations = 100
+while (iteration < maxIterations ) && (~done)
     
-      [samples(:,1), samples(:,2), samples(:,3)] = motionModel( samples(:,1), samples(:,2), samples(:,3), deltaX, deltaY, deltaTheta, numSamples ); 
-      currentPose(1) = samples(1,1);
-      currentPose(2) = samples(1,2);
-      currentPose(3) = samples(1,3);
-      currentPose(1) = 100;
-      currentPose(2) = 100;
-      currentPose(3) = 0;
-
-      sonarResults = getMockSonarResults( mapImage, currentPose, -pi/4, pi/2, 180 );
-
-      dumpState();
-
-      
-      
-%while( ~done )
-%      deltaX = 1.5;
-%      deltaY = 1.5;
-%      deltaTheta = pi/16;
     
-%      [samples(:,1), samples(:,2), samples(:,3)] = motionModel( samples(:,1), samples(:,2), samples(:,3), deltaX, deltaY, deltaTheta ); 
-%      dumpState();
-      
-%      
-%      [sonarResults,  sonarThetas] = getStubSonarResults( map, initialX, initialY, initialTheta );
-%      for i = 1: 180
-%         x = cos( sonarThetas( i )) * sonarResults( i ) + initialX;
-%         y = sin( sonarThetas( i )) * sonarResults( i ) + initialY;
-%         
-%         x, y, sonarResults( i )
-%         plot( x, y ); 
-% 
-%      end
-%     
-%     generateOdometryModelSamples();
-%     
-% %    if( reachedTarget ) 
-% %        setTargetNextTarget();        
-% %    end
-%     nextLocalization = nextLocalization - 1;
-%     if( nextLocalization  <= 0 )
-%         nextLocalization = localizationInterval;
-         
-         % stop moving
-%         doFullStop();
-%         setLocation = doLocalization();
-%         setCourseTo( currentTarget );
-%     end
-% end
+    iteration = iteration + 1
+    nextLocalization = nextLocalization - 1
+    currentPathStep
+    currentPose, currentWayPoint
+    [distance, bearing] = getDistanceAndBearing( currentPose, currentWayPoint)  % just pythagorus
+    
+    %% first let's see if we are at a waywpint or the final destination
+    if( arrivedAtWayPoint( distance, bearing ) )
+        'arrived at wayPoint'
+        
+        if currentPathStep > size(wayPoints,1)
+            'arrived at final Destination'
+            arrivedAtFinalDestination = true;
+            done = true;  % a seperate done flag leave room to exit on conditions where we never arriaved at the final destination
+        else
+            'set new current waypoint'
+
+            currentPathStep = currentPathStep + 1
+            currentWayPoint = wayPoints( currentPathStep )
+        end
+    end
+    
+    if ~done 
+        % OK We are on the way to our next way point
+        if( nextLocalization <= 0 )  %timeToLocalize
+            'time to localize'
+            doFullStop( doMocks );
+            
+            nextLocalization = localizationInterval;
+            
+           % currentPose = performLocalization( currentPose, samples, mapImage );
+            [distance, bearing] = getDistanceAndBearing( currentPose, currentWayPoint);  % just pythagorus
+
+            % so we localized and guessed our new position.  Let's set
+            % bearing and speed to the target waypoint
+            doRotate( r, l, bearing, rotatePower, doMocks );
+            
+            goStraight( r, l, distance, forwardPower, doMocks ); % speed, distance 
+            dumpState();
+        end
+    end
+
+    
+    % mock only
+    distance = 1;
+    currentPose(1) = currentPose(1) + cos(currentPose(3)) * distance;
+    currentPose(2) = currentPose(2) + sin(currentPose(3)) * distance;
+    currentPose(3) = inRange(currentPose(3) + pi / 90);
+
+            
+    
+end;
