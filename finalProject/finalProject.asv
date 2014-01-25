@@ -3,8 +3,7 @@ clear variables;
 clear global;
 close all;
 
-initializeRobot;
-
+InitializeRobot;
 
 doMocks = true;
 
@@ -30,8 +29,7 @@ numSamples = 4;
 
 samples = InitializeSamples( currentPose, numSamples ) ;
 
-sonarResults = getMockSonarResults( mapImage, currentPose, -pi/2, pi, 10 );
-
+sonarResults = getSonarResults( mapImage, currentPose );
     
 
 dumpState;
@@ -76,7 +74,7 @@ while (iteration < maxIterations ) && (~done)
             
             nextLocalization = localizationInterval;
             
-           % currentPose = performLocalization( currentPose, samples, mapImage );
+            currentPose = performLocalization( currentPose, samples, mapImage );
             [distance, bearing] = getDistanceAndBearing( currentPose, currentWayPoint);  % just pythagorus
 
             % so we localized and guessed our new position.  Let's set

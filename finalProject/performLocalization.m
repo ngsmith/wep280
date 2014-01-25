@@ -1,4 +1,4 @@
-function [ correctedPose ] = performLocalization( currentPose, samples, mapImage )
+function [ correctedPose ] = performLocalization( currentPose, samples, mapImage, doMocks )
     
     deltaX = 0;
     deltaY = 0;
@@ -10,8 +10,7 @@ function [ correctedPose ] = performLocalization( currentPose, samples, mapImage
     
     % set the new positon: really just old position + deltas
     newPoseFromMotionModel(1:3) = samples(1,1:3);
-    sonarResults = getMockSonarResults( mapImage, newPoseFromMotionModel, pi, pi, 1 );
-    
+    sonarResults = getSonarResults( newPoseFromMotionModel, doMocks );
     weights = calculateWeights( samples, sonarResults, mapImage );
    
     samples(:,4) = weights.';

@@ -1,17 +1,10 @@
-function [ sonarReadings ] = doRobotScan( requestedReadings )
+function [ sonarReadings ] = doRobotScan( currentPose, requestedReadings )
 
 scanPower = 30;
-
+scanRange = 60;
 sonarMotor = NXTMotor(MOTOR_A);
 ULTRASONIC_SENSOR_PORT = 3;
 OpenUltrasonic( ULTRASONIC_SENSOR_PORT );
-
-% sonarMotorCCW.SpeedRegulation   = false;  % not for sync mode
-% sonarMotorCCW.TachoLimit        = 90 * ;
-% sonarMotor.SmoothStart       = true;
-% sonarMotor.Power=10;
-% sonarMotor.SendToNXT();
-% sonarMotor.WaitFor();
 
 sonarMotor.Power=-10;
 sonarMotor.TachoLimit=0;
@@ -22,17 +15,20 @@ done = false;
 sonarReadings = [;];
 while size(sonarReadings,1) < requestedReadings;
     motorInfo = sonarMotor.ReadFromNXT();
-    if( motorInfo.Position > 180 )
+    if( motorInfo.Position > scanRange )
       sonarMotor.Power=-10;
       sonarMotor.SendToNXT();
     end
-    if( motorInfo.Position < -180 )
+    if( motorInfo.Position < -scanRange )
       sonarMotor.Power=10;
       sonarMotor.SendToNXT();
     end
-    motorInfo.Position;
+    theta = motorInfo.Position;
+    theta = deg2rad( theta );
+    theta = theta + currentPose(3);
+    theta = inRange( theta );
     distance = GetUltrasonic( ULTRASONIC_SENSOR_PORT );
-    reading = [distance motorInfo.Position]
+    reading = [distance theta ];
     sonarReadings(end+1,:) = reading;
 end
 sonarMotor.Stop('OFF');
