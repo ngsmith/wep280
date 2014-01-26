@@ -5,11 +5,18 @@ close all;
 
 InitializeRobot;
 
-doMocks = true;
+doMocks = false;
 
 
 [mapImage, mapDimensions, wayPoints] = InitializeMap();
+
 currentPose = [200 200 0];
+
+%Estimate Initial Pose
+doInitPose = false;
+if(doInitPose)
+    sonarInitResults = getSonarResults(currentPose, false);
+
 
 r = 2.7;
 l = 6;
@@ -29,7 +36,7 @@ numSamples = 4;
 
 samples = InitializeSamples( currentPose, numSamples ) ;
 
-sonarResults = getSonarResults( mapImage, currentPose );
+sonarResults = getSonarResults( currentPose, doMocks );
     
 
 dumpState;
@@ -74,7 +81,7 @@ while (iteration < maxIterations ) && (~done)
             
             nextLocalization = localizationInterval;
             
-            currentPose = performLocalization( currentPose, samples, mapImage );
+            currentPose = performLocalization( currentPose, samples, mapImage, doMocks );
             [distance, bearing] = getDistanceAndBearing( currentPose, currentWayPoint);  % just pythagorus
 
             % so we localized and guessed our new position.  Let's set

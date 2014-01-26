@@ -9,7 +9,17 @@ doMocks = false;
 
 
 [mapImage, mapDimensions, wayPoints] = InitializeMap();
+
 currentPose = [200 200 0];
+
+%Estimate Initial Pose
+doInitPose = false;
+
+% if(doInitPose)
+%     sonarInitResults = getSonarResults(currentPose, false);
+%     %Triangulate based on comparison with map
+%     %
+% end
 
 r = 2.7;
 l = 6;
