@@ -14,9 +14,12 @@ currentPose = [200 200 0];
 
 %Estimate Initial Pose
 doInitPose = false;
-if(doInitPose)
-    sonarInitResults = getSonarResults(currentPose, false);
 
+% if(doInitPose)
+%     sonarInitResults = getSonarResults(currentPose, false);
+%     %Triangulate based on comparison with map
+%     %
+% end
 
 r = 2.7;
 l = 6;
@@ -38,7 +41,17 @@ samples = InitializeSamples( currentPose, numSamples ) ;
 
 sonarResults = getSonarResults( currentPose, doMocks );
     
-
+mapBorder = [];
+[r,c] = size(map);
+for idr = l:r
+    for idc = 1:c
+        if(map(idr,idc) == 1)
+            %Store border in 1x2
+            mapBorder(end+1,1) = idr;
+            mapBorder(end,2) = idc;
+        end
+    end
+end
 dumpState;
 
 localizationInterval = 20;
@@ -48,6 +61,8 @@ arrivedAtFinalDestination = false;
 done = false;
 iteration = 0;
 maxIterations = 100
+
+%drawMap(samples, sonarResults, mapImage, waypoints, currentPose, currentPathStep);
 while (iteration < maxIterations ) && (~done)
     
     

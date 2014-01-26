@@ -3,9 +3,9 @@ clear variables;
 clear global;
 close all;
 
-InitializeRobot;
+%InitializeRobot;
 
-doMocks = false;
+doMocks = true;
 
 
 [mapImage, mapDimensions, wayPoints] = InitializeMap();
@@ -40,7 +40,11 @@ numSamples = 4;
 samples = InitializeSamples( currentPose, numSamples ) ;
 
 sonarResults = getSonarResults( currentPose, doMocks );
-    
+
+mapBorder = [];
+if(false)
+mapBorder = getMapBorder(mapImage);
+end
 
 dumpState;
 
@@ -51,6 +55,8 @@ arrivedAtFinalDestination = false;
 done = false;
 iteration = 0;
 maxIterations = 100
+
+
 while (iteration < maxIterations ) && (~done)
     
     

@@ -24,3 +24,13 @@ h = quiver(currentPose(1), currentPose(2), arrowSize* cos(currentPose(3)), arrow
 sonarX = 1 + currentPose(1) + (cos(sonarResults(:,2)) .* sonarResults(:,1));
 sonarY = 2 + currentPose(2) + (sin(sonarResults(:,2)) .* sonarResults(:,1));
 plot( sonarX, sonarY, 'b.' );
+
+%Plot Map
+plotMap = true;
+if(plotMap)
+    [rows, columns] = size(mapBorder);
+    for i = 1:rows
+        plot(mapBorder(i,1),mapBorder(i,2),'g.');
+    end
+    %plotMap = false;
+end
