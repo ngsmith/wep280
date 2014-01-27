@@ -1,7 +1,6 @@
 function Straight(distance, power, r)
 % robot drives on a straight line for a given distance with a given power
 
-
 Ports = [MOTOR_B; MOTOR_C];  % motorports for left and right wheel
 
 mB                    = NXTMotor(MOTOR_B);

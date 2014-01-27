@@ -4,15 +4,26 @@
 % COM_CloseNXT all
 % close all
 
-poseInitial = [20 ; 20 ; 0];
+poseInitial = [13 ; 65 ; 0];
 Initialize
 localize = 1;
 
-Targets = [ 40 40;...
-    60 60;...
-    60 80;...
-    90 80;...
-    20 20;];
+% Targets = [ 40 40;...
+%     60 60;...
+%     60 80;...
+%     90 80;...
+%     20 20;];
+
+Targets = [62 118;...
+    90 145;...
+    108 124;...
+    140 120;...
+    150 30];
+Names = [1;2;3;4;5];
+plot(Targets(:,1), Targets(:,2),'go'); 
+text(Targets(:,1), Targets(:,2), num2str(Names), 'VerticalAlignment','bottom','HorizontalAlignment','right');
+
+Get_readings
 
 Target_number = 1;
 while Target_number<=length(Targets)
@@ -29,6 +40,7 @@ while(Encoder_B_a. RunStateByte ~= 0)
     Xprime;
     Motion_measurement_model;
 end
+
 mB.Stop('off');
 mC.Stop('off');
 
@@ -37,12 +49,13 @@ Straight(distance_to_travel, 20, 2.7);
 Encoder_B_a = NXT_GetOutputState(MOTOR_B);
 while(Encoder_B_a. RunStateByte ~= 0)
     Read_Encoders;
-    Xprime
+    Xprime;
     Motion_measurement_model;
     plot(x(1),y(1),'.b');
     drawnow
     distanceBorder = GetUltrasonic(3, h)+3;
-    if(distanceBorder < 10 && distanceBorder >=0)
+    if(distanceBorder < 20 && distanceBorder > 0)
+        'distance to low'
         break
     end
 end
@@ -53,6 +66,10 @@ if(localize == 1)
      mB.Stop('off');
      mC.Stop('off');
      Get_readings
+     
+     
+     
+     
  for i = 2:100
     if(x(i) >=0 && x(i) < size(map_bw,2) && y(i) >=0 && y(i) < size(map_bw,1) )
         %Call measurement model, gives probability
@@ -75,7 +92,8 @@ if(localize == 1)
     y(1) = pdy.mu;
     theta(1) = pdtheta.mu;
     %plot(x(1),x(2),'.w','MarkerSize', 10);
-    %localize = 0;   
+    %localize = 0; 
+   
 end
 
     tolerance = 5;
