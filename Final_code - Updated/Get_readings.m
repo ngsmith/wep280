@@ -22,15 +22,16 @@ offset = 3;
             z = GetUltrasonic(3, h)+offset;
             if z < 255 && z>=0
             %sensor_angle = (90 - mA_State.RotationCount ) /180 * 3.14159 ;
-            sensor_angle = (mA_State.RotationCount ) /360 * 3.14159 ;
+            sensor_angle = -(mA_State.RotationCount ) /360 * (2*3.14159) ;
 %             if(sensor_angle < 0) 
 %                 sensor_angle = sensor_angle + 2* pi;
 %             end
             Readings(Reading_Number,1:2) = [ sensor_angle  , z]
             Reading_Number = Reading_Number + 1;
-            sonarX = 1 + x(1) + (cos(Readings(end,1)) .* Readings(end,2));
-            sonarY = 2 + y(1) + (sin(Readings(end,1)) .* Readings(end,2));
+            sonarX = x(1) + (cos(theta(1)+Readings(end,1)) * Readings(end,2));
+            sonarY = y(1) + (sin(theta(1)+Readings(end,1)) * Readings(end,2));
             plot(sonarX, sonarY, 'y.');
+            drawnow;
             end
             mA_State= NXT_GetOutputState(MOTOR_A);
     end
@@ -45,15 +46,16 @@ mA_State= NXT_GetOutputState(MOTOR_A);
             z = GetUltrasonic(3, h)++offset;
             if z < 255 && z>=0
             %sensor_angle = (90 - mA_State.RotationCount ) /180 * 3.14159;
-            sensor_angle = (mA_State.RotationCount ) /360 * 3.14159 ;
+            sensor_angle = -(mA_State.RotationCount ) /360 * (2*3.14159) ;
 %             if(sensor_angle < 0) 
 %                 sensor_angle = sensor_angle + 2* pi;
 %             end
            Readings(Reading_Number,1:2) = [ sensor_angle  , z]
             Reading_Number = Reading_Number + 1;
-            sonarX = 1 + x(1) + (cos(Readings(end,1)) .* Readings(end,2));
-            sonarY = 2 + y(1) + (sin(Readings(end,1)) .* Readings(end,2));
+            sonarX = x(1) + (cos(theta(1)+Readings(end,1)) * Readings(end,2));
+            sonarY = y(1) + (sin(theta(1)+Readings(end,1)) * Readings(end,2));
             plot(sonarX, sonarY, 'y.');
+            drawnow;
             end
             mA_State= NXT_GetOutputState(MOTOR_A);
     end   

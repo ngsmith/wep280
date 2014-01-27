@@ -12,7 +12,7 @@ hold on
 
 
 %% Constants
-l = 6;  % cm
+l = 5.7;  % cm
 r = 2.7; % cm
 N = 100+1; %Number of samples
 
@@ -81,11 +81,11 @@ plot(probX+xp,probY+yp,'w');
 
 
 % Rotational alphas
-a1 = 0.05;
-a2 = 0.05;
+a1 = 0.075;
+a2 = 0.075;
 % Translational alphas
-a3 = .1;
-a4 = .1;
+a3 = .15;
+a4 = .15;
 
 %% controller constants
 k =  [3 8 -1.5]; %rho,alpha,beta

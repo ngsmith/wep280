@@ -6,7 +6,7 @@
       newX = datasample(myX(2:100,:),99,'Weights',myX(2:100,4));  
       myX(2:100,:)=newX;
     else 
-      myX(2:100,:) = 1/99;
+      myX(2:100,4) = 1/99;
     end
     
     

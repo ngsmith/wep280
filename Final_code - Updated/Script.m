@@ -18,7 +18,8 @@ Targets = [62 118;...
     90 145;...
     108 124;...
     140 120;...
-    150 30];
+    141 84;...
+    150 40];
 Names = [1;2;3;4;5];
 plot(Targets(:,1), Targets(:,2),'go'); 
 text(Targets(:,1), Targets(:,2), num2str(Names), 'VerticalAlignment','bottom','HorizontalAlignment','right');
@@ -53,8 +54,8 @@ while(Encoder_B_a. RunStateByte ~= 0)
     Motion_measurement_model;
     plot(x(1),y(1),'.b');
     drawnow
-    distanceBorder = GetUltrasonic(3, h)+3;
-    if(distanceBorder < 20 && distanceBorder > 0)
+    distanceBorder = GetUltrasonic(3, h)+3
+    if(distanceBorder < 25 && distanceBorder > 0)
         'distance to low'
         break
     end
